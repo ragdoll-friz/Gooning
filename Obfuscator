@@ -1,0 +1,90 @@
+"use client"
+
+import { useState } from "react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+const EXAMPLE_CODES = {
+  moonsec: `--// Obfuscated with MoonSec V3
+local v0=string.char;local v1=string.byte;local v2=string.sub;local v3=bit32 or bit;`,
+  luaobfuscator: `--// Obfuscated with luaobfuscator.com
+local a=select;local b=string.byte;local c=string.char;`,
+}
+
+export default function Deobfuscator() {
+  const [obfuscator, setObfuscator] = useState<"moonsec" | "luaobfuscator">("moonsec")
+  const [input, setInput] = useState("")
+  const [result, setResult] = useState("")
+
+  // This is a simple demonstration deobfuscator
+  // A real implementation would need more sophisticated parsing
+  const deobfuscate = () => {
+    let deobfuscated = input
+
+    if (obfuscator === "moonsec") {
+      // Basic MoonSec V3 deobfuscation example
+      deobfuscated = deobfuscated.replace(/local v\d+=string\.char;/g, "-- Deobfuscated MoonSec variable")
+    } else {
+      // Basic luaobfuscator.com deobfuscation example
+      deobfuscated = deobfuscated.replace(/local [a-z]=select;/g, "-- Deobfuscated luaobfuscator variable")
+    }
+
+    setResult(deobfuscated)
+  }
+
+  return (
+    <div className="container mx-auto p-4 max-w-3xl">
+      <Card>
+        <CardHeader>
+          <CardTitle>Lua Code Deobfuscator</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Select Obfuscator:</label>
+            <Select
+              value={obfuscator}
+              onValueChange={(value: "moonsec" | "luaobfuscator") => {
+                setObfuscator(value)
+                setInput(EXAMPLE_CODES[value])
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="moonsec">MoonSec V3</SelectItem>
+                <SelectItem value="luaobfuscator">luaobfuscator.com</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Obfuscated Code:</label>
+            <Textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Paste your obfuscated code here..."
+              className="font-mono min-h-[200px]"
+            />
+          </div>
+
+          <Button onClick={deobfuscate} className="w-full">
+            Deobfuscate
+          </Button>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Result:</label>
+            <Textarea
+              value={result}
+              readOnly
+              className="font-mono min-h-[200px] bg-muted"
+              placeholder="Deobfuscated code will appear here..."
+            />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
